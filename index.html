@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textris Worksheet Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Gotham', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #57068c;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #57068c;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            height: 40px;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+        
+        .input-section {
+            padding: 40px;
+            background: #f8f8f8;
+            position: relative;
+        }
+        
+        .bank-toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .bank-toggle-button {
+            background: white;
+            color: #57068c;
+            border: 2px solid #57068c;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .bank-toggle-button:hover {
+            background: #57068c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(87, 6, 140, 0.3);
+        }
+        
+        .bank-icon {
+            font-size: 1.2em;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 500;
+            color: #212121;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #57068c;
+            box-shadow: 0 0 0 2px rgba(87, 6, 140, 0.1);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 30px;
+            background: #57068c;
+            color: white;
+            border: none;
+            border-radius: 0;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background: #330452;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(87, 6, 140, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .secondary-button {
+            background: #666;
+        }
+        
+        .secondary-button:hover {
+            background: #444;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .edit-section {
+            padding: 30px;
+            background: #fff;
+            border: 2px solid #57068c;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .edit-section.active {
+            display: block;
+        }
+        
+        .edit-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #57068c;
+            margin-bottom: 15px;
+        }
+        
+        .edit-instructions {
+            background: #f0e6ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #57068c;
+            font-size: 0.95em;
+        }
+        
+        .sentence-editor {
+            margin-bottom: 20px;
+        }
+        
+        .sentence-editor-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        
+        .sentence-editor-number {
+            font-weight: bold;
+            min-width: 30px;
+            color: #57068c;
+        }
+        
+        .sentence-editor-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        
+        .sentence-editor-input:focus {
+            outline: none;
+            border-color: #57068c;
+            box-shadow: 0 0 0 2px rgba(87, 6, 140, 0.1);
+        }
+        
+        .remove-sentence-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .remove-sentence-btn:hover {
+            background: #c82333;
+        }
+        
+        .add-sentence-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .add-sentence-btn:hover {
+            background: #218838;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .finalize-btn {
+            background: #57068c;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .finalize-btn:hover {
+            background: #330452;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(87, 6, 140, 0.3);
+        }
+        
+        .cancel-edit-btn {
+            background: #666;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .cancel-edit-btn:hover {
+            background: #444;
+        }
+        
+        .worksheet {
+            padding: 40px 60px;
+            background: white;
+            display: none;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .worksheet.active {
+            display: block;
+        }
+        
+        .worksheet-header {
+            margin-bottom: 20px;
+            position: relative;
+            padding-right: 150px;
+        }
+        
+        .worksheet-logo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 40px;
+        }
+        
+        .worksheet-title {
+            display: none;
+        }
+        
+        .worksheet-instructions {
+            font-size: 0.95em;
+            line-height: 1.4;
+            text-align: left;
+            color: #000;
+            margin-bottom: 20px;
+        }
+        
+        .sentence-item {
+            display: flex;
+            margin: 10px 0;
+            border: 1px solid #000;
+            background: white;
+            page-break-inside: avoid;
+            align-items: center;
+        }
+        
+        .sentence-number {
+            font-weight: bold;
+            font-size: 1.4em;
+            padding: 15px 20px;
+            min-width: 60px;
+            color: #000;
+            text-align: center;
+            border-right: 1px solid #000;
+        }
+        
+        .sentence-text {
+            flex: 1;
+            font-size: 1em;
+            line-height: 1.4;
+            color: #000;
+            padding: 15px 20px;
+        }
+        
+        .submission-sheet {
+            margin-top: 40px;
+            padding: 30px;
+            border: 2px solid #000;
+            page-break-before: always;
+        }
+        
+        .submission-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .team-info {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #000;
+        }
+        
+        .team-line {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .team-line span {
+            display: inline-block;
+            width: 150px;
+        }
+        
+        .attempt-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 1px solid #000;
+        }
+        
+        .attempt-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .attempt-grid {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .number-box {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feedback-line {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #666;
+            font-size: 1em;
+        }
+        
+        .feedback-line span {
+            display: inline-block;
+            width: 200px;
+        }
+        
+        .answer-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #57068c;
+            background: #f9f7fc;
+        }
+        
+        .answer-label {
+            font-weight: bold;
+            font-size: 1.2em;
+            display: block;
+            color: #57068c;
+            margin-bottom: 10px;
+        }
+        
+        .answer-text {
+            font-size: 1.1em;
+            color: #000;
+            display: block;
+        }
+        
+        /* Modal Styles */
+        .puzzle-bank-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .puzzle-bank-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            background: #57068c;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #330452;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .modal-header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .modal-header-buttons .secondary-button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+        
+        .export-button {
+            background: #28a745;
+        }
+        
+        .export-button:hover {
+            background: #218838;
+        }
+        
+        .import-button {
+            background: #17a2b8;
+        }
+        
+        .import-button:hover {
+            background: #138496;
+        }
+        
+        .import-input {
+            display: none;
+        }
+        
+        .close-button {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: none;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            background: #f8f8f8;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+        
+        .puzzle-card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .puzzle-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+            border-left: 4px solid #57068c;
+        }
+        
+        .puzzle-info {
+            flex: 1;
+        }
+        
+        .puzzle-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .puzzle-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .puzzle-preview {
+            font-size: 0.85em;
+            color: #888;
+            font-style: italic;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 500px;
+        }
+        
+        .puzzle-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .puzzle-actions button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+        
+        .delete-button {
+            background: #dc3545;
+        }
+        
+        .delete-button:hover {
+            background: #c82333;
+        }
+        
+        .load-button {
+            background: #57068c;
+        }
+        
+        .load-button:hover {
+            background: #330452;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .input-section {
+                display: none;
+            }
+            
+            .puzzle-bank-modal {
+                display: none !important;
+            }
+            
+            .header {
+                display: none;
+            }
+            
+            .worksheet {
+                padding: 30px 40px;
+                font-size: 12pt;
+            }
+            
+            .sentence-item {
+                border: 1px solid #000;
+                margin: 8px 0;
+            }
+            
+            .sentence-number {
+                border-right: 1px solid #000;
+            }
+            
+            .worksheet-title {
+                font-size: 16pt;
+            }
+            
+            .worksheet-instructions {
+                font-size: 11pt;
+            }
+            
+            .hide-for-print {
+                display: none !important;
+            }
+            
+            .show-for-print {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="logo">
+            <h1>Textris Generator</h1>
+        </div>
+        
+        <div class="input-section">
+            <div class="bank-toggle-container">
+                <button class="bank-toggle-button" onclick="togglePuzzleBank()">
+                    <span class="bank-icon">📚</span>
+                    Puzzle Bank (<span id="puzzleCount">0</span>)
+                </button>
+            </div>
+            
+            <div class="input-group">
+                <label for="title">Worksheet Title:</label>
+                <input type="text" id="title" placeholder="e.g., Transfer of Learning" value="Textris">
+            </div>
+            
+            <div class="input-group">
+                <label for="instructions">Instructions (optional):</label>
+                <textarea id="instructions" placeholder="Enter custom instructions for your worksheet...">Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.</textarea>
+            </div>
+            
+            <div class="input-group">
+                <label for="sourceText">Source Attribution (optional):</label>
+                <input type="text" id="sourceText" placeholder="e.g., from David Perkin's 'Transfer of Learning'">
+            </div>
+            
+            <div class="input-group">
+                <label for="paragraph">Paste your paragraph:</label>
+                <textarea id="paragraph" placeholder="Paste the paragraph you want to turn into a Textris worksheet..."></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="generateWorksheet()">Generate Worksheet</button>
+                <button class="secondary-button" onclick="saveToBank()">Save to Bank</button>
+                <button class="secondary-button" onclick="printStudentVersion()">Print Student Version</button>
+                <button class="secondary-button" onclick="printInstructorVersion()">Print Instructor Copy</button>
+                <button class="secondary-button" onclick="resetForm()">Reset</button>
+            </div>
+            
+            <div class="preview-notice" id="previewNotice">
+                ✓ Worksheet generated! Use the print buttons above to print different versions.
+            </div>
+            
+            <div class="edit-section" id="editSection">
+                <div class="edit-header">Edit Sentences</div>
+                <div class="edit-instructions">
+                    Review and edit the sentences below. You can modify text, add new sentences, or remove unwanted ones. 
+                    This is helpful if the automatic sentence splitting didn't work correctly.
+                </div>
+                <div class="sentence-editor" id="sentenceEditor">
+                    <!-- Sentence inputs will be generated here -->
+                </div>
+                <button class="add-sentence-btn" onclick="addSentence()">+ Add Sentence</button>
+                <div class="edit-buttons">
+                    <button class="finalize-btn" onclick="finalizeWorksheet()">Finalize Worksheet</button>
+                    <button class="cancel-edit-btn" onclick="cancelEdit()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="worksheet" id="worksheet">
+            <!-- Worksheet content will be generated here -->
+        </div>
+    </div>
+    
+    <!-- Puzzle Bank Modal -->
+    <div class="puzzle-bank-modal" id="puzzleBankModal">
+        <div class="modal-overlay" onclick="closePuzzleBank()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Puzzle Bank</h2>
+                <div class="modal-header-buttons">
+                    <button class="secondary-button export-button" onclick="exportPuzzles()">Export All</button>
+                    <button class="secondary-button import-button" onclick="document.getElementById('importInput').click()">Import</button>
+                    <input type="file" id="importInput" class="import-input" accept=".json" onchange="importPuzzles(event)">
+                    <button class="secondary-button" onclick="clearAllPuzzles()">Clear All</button>
+                    <button class="close-button" onclick="closePuzzleBank()">×</button>
+                </div>
+            </div>
+            <div class="modal-body" id="bankContent">
+                <p class="empty-message">No saved puzzles yet. Generate a worksheet and click "Save to Bank" to store it.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentWorksheetData = null;
+        let puzzleBank = [];
+        let editingSentences = [];
+        
+        // Load saved puzzles from memory on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to load from localStorage if available (won't work in Claude, but will work when deployed)
+            try {
+                const saved = localStorage.getItem('textrisPuzzles');
+                if (saved) {
+                    puzzleBank = JSON.parse(saved);
+                } else {
+                    initializeDefaultPuzzles();
+                }
+            } catch (e) {
+                // localStorage not available (Claude environment), use default puzzles
+                initializeDefaultPuzzles();
+            }
+            updateBankDisplay();
+            updatePuzzleCount();
+            savePuzzleBank();  // Save after deleting
+        });
+        
+        function initializeDefaultPuzzles() {
+            // Pre-loaded puzzles organized by difficulty
+            const defaultPuzzles = [
+                // EASY PUZZLES
+                {
+                    title: "Cognitive Load Theory (Easy)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from John Sweller's 'Cognitive Load Theory and Educational Technology'",
+                    sentences: [
+                        "The success or otherwise of educational technology is affected by the characteristics of human cognitive architecture.",
+                        "Technology-based instruction used without reference to the instructional design principles that flow from human cognition is likely to be random in its effectiveness.",
+                        "Cognitive load theory (Sweller et al. 2011, 2019), as an instructional design theory based on our rapidly expanding knowledge of human cognition, is well-suited to provide guidance suggesting which educational technologies are likely to be effective and how they should be used.",
+                        "This paper summarises the theory and applies it to learning that occurs with the assistance of educational technology."
+                    ],
+                    originalParagraph: "The success or otherwise of educational technology is affected by the characteristics of human cognitive architecture. Technology-based instruction used without reference to the instructional design principles that flow from human cognition is likely to be random in its effectiveness. Cognitive load theory (Sweller et al. 2011, 2019), as an instructional design theory based on our rapidly expanding knowledge of human cognition, is well-suited to provide guidance suggesting which educational technologies are likely to be effective and how they should be used. This paper summarises the theory and applies it to learning that occurs with the assistance of educational technology.",
+                    savedAt: Date.now() - 8000000
+                },
+                {
+                    title: "Scientific Method (Easy)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'Introduction to Scientific Research'",
+                    sentences: [
+                        "The scientific method begins with careful observation of natural phenomena.",
+                        "From these observations, scientists formulate hypotheses to explain what they have seen.",
+                        "These hypotheses are then tested through controlled experiments.",
+                        "The results either support or refute the original hypothesis, leading to new understanding."
+                    ],
+                    originalParagraph: "The scientific method begins with careful observation of natural phenomena. From these observations, scientists formulate hypotheses to explain what they have seen. These hypotheses are then tested through controlled experiments. The results either support or refute the original hypothesis, leading to new understanding.",
+                    savedAt: Date.now() - 7000000
+                },
+                {
+                    title: "Water Cycle (Easy)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'Earth Science Basics'",
+                    sentences: [
+                        "Water evaporates from oceans, lakes, and rivers due to heat from the sun.",
+                        "This water vapor rises into the atmosphere where it cools and condenses into clouds.",
+                        "When the clouds become heavy with moisture, precipitation occurs as rain or snow.",
+                        "The water then flows back to the oceans through rivers and underground streams, completing the cycle."
+                    ],
+                    originalParagraph: "Water evaporates from oceans, lakes, and rivers due to heat from the sun. This water vapor rises into the atmosphere where it cools and condenses into clouds. When the clouds become heavy with moisture, precipitation occurs as rain or snow. The water then flows back to the oceans through rivers and underground streams, completing the cycle.",
+                    savedAt: Date.now() - 6000000
+                },
+                
+                // MEDIUM PUZZLES
+                {
+                    title: "Chess Master's Dilemma (Medium)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from David Perkin's 'Transfer of Learning'",
+                    sentences: [
+                        "Once upon a time, an astute and beneficent leader in a remote country anticipated increasing aggression from a territory hungry neighbor.",
+                        "Recognizing that the neighbor had more military might, the leader concluded that his people would have to outthink, rather than outpower, the enemy.",
+                        "Undistinguished in its military armament and leadership, the country did have one remarkable resource: the reigning world chess master, undefeated for over twenty years.",
+                        "\"Aha,\" the leader said to himself, \"we will recruit this intellect, honed so long on the whetstone of chess, teach him some politics and military theory, and then outmaneuver the enemy with the help of his genius.\"",
+                        "A fanciful tale, to be sure, but consider the leaders plan for a moment: Is it disastrously naive, possibly helpful, or a good bet?",
+                        "In fact, the tale has no definite conclusion.",
+                        "Rather, it is the beginning of another tale, a tale about psychology and the human intellect that research is gradually spinning.",
+                        "Questions like that of the chess master's neuropolitical and military potential stand in the center of one of the most puzzling and important issues that cognitive psychology has addressed: the roles of general and of context-specific knowledge in thinking."
+                    ],
+                    originalParagraph: "Once upon a time, an astute and beneficent leader in a remote country anticipated increasing aggression from a territory hungry neighbor. Recognizing that the neighbor had more military might, the leader concluded that his people would have to outthink, rather than outpower, the enemy. Undistinguished in its military armament and leadership, the country did have one remarkable resource: the reigning world chess master, undefeated for over twenty years. \"Aha,\" the leader said to himself, \"we will recruit this intellect, honed so long on the whetstone of chess, teach him some politics and military theory, and then outmaneuver the enemy with the help of his genius.\" A fanciful tale, to be sure, but consider the leaders plan for a moment: Is it disastrously naive, possibly helpful, or a good bet? In fact, the tale has no definite conclusion. Rather, it is the beginning of another tale, a tale about psychology and the human intellect that research is gradually spinning. Questions like that of the chess master's neuropolitical and military potential stand in the center of one of the most puzzling and important issues that cognitive psychology has addressed: the roles of general and of context-specific knowledge in thinking.",
+                    savedAt: Date.now() - 5000000
+                },
+                {
+                    title: "Climate Change Impact (Medium)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'Environmental Science Quarterly'",
+                    sentences: [
+                        "Rising global temperatures are causing unprecedented changes in Earth's climate systems.",
+                        "Arctic ice sheets are melting at rates that exceed even the most pessimistic predictions from a decade ago.",
+                        "This accelerated melting contributes to rising sea levels, threatening coastal communities worldwide.",
+                        "Meanwhile, changing ocean temperatures disrupt marine ecosystems and alter weather patterns.",
+                        "These shifts create feedback loops that further accelerate warming, making intervention increasingly urgent.",
+                        "Scientists argue that we have less than a decade to implement substantial changes to avoid catastrophic tipping points."
+                    ],
+                    originalParagraph: "Rising global temperatures are causing unprecedented changes in Earth's climate systems. Arctic ice sheets are melting at rates that exceed even the most pessimistic predictions from a decade ago. This accelerated melting contributes to rising sea levels, threatening coastal communities worldwide. Meanwhile, changing ocean temperatures disrupt marine ecosystems and alter weather patterns. These shifts create feedback loops that further accelerate warming, making intervention increasingly urgent. Scientists argue that we have less than a decade to implement substantial changes to avoid catastrophic tipping points.",
+                    savedAt: Date.now() - 4000000
+                },
+                {
+                    title: "Digital Revolution (Medium)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'Technology and Society'",
+                    sentences: [
+                        "The digital revolution has fundamentally transformed how humans communicate, work, and think.",
+                        "What began as simple computing machines in the mid-20th century has evolved into a global network of interconnected devices.",
+                        "This transformation happened so rapidly that regulatory frameworks and social norms struggle to keep pace.",
+                        "Children born today will never know a world without instant access to vast amounts of information.",
+                        "Yet this unprecedented connectivity brings new challenges: privacy concerns, misinformation, and digital addiction.",
+                        "As we navigate this new landscape, we must balance innovation with the preservation of human values and social cohesion."
+                    ],
+                    originalParagraph: "The digital revolution has fundamentally transformed how humans communicate, work, and think. What began as simple computing machines in the mid-20th century has evolved into a global network of interconnected devices. This transformation happened so rapidly that regulatory frameworks and social norms struggle to keep pace. Children born today will never know a world without instant access to vast amounts of information. Yet this unprecedented connectivity brings new challenges: privacy concerns, misinformation, and digital addiction. As we navigate this new landscape, we must balance innovation with the preservation of human values and social cohesion.",
+                    savedAt: Date.now() - 3000000
+                },
+                
+                // HARD PUZZLES
+                {
+                    title: "Fracking Our Attention (Hard)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'Powerful Forces Are Fracking Our Attention. We Can Fight Back.' by D. Graham Burnett, Alyssa Loh and Peter Schmidt, 2023",
+                    sentences: [
+                        "The lament is as old as education itself: The students aren't paying attention.",
+                        "But today, the problem of flighty or fragmented attention has reached truly catastrophic proportions.",
+                        "High school and college teachers overwhelmingly report that students' capacity for sustained, or deep attention has sharply decreased significantly impeding the forms of study — reading, looking at art, round-table discussions — once deemed central to the liberal arts.",
+                        "By some measures you are lucky these days to get 47 seconds of focused attention on a discrete task.",
+                        "\"Middlemarch\" is tough sledding on that timeline.",
+                        "So are most forms of human interaction out of which meaningful life, collective action and political engagement are made.",
+                        "We are witnessing the dark side of our new technological lives, whose extractive profit models amount to the systematic fracking of human beings: pumping vast quantities of high-pressure media content into our faces to force up a spume of the vaporous and intimate stuff called attention, which now trades on the open market.",
+                        "Increasingly powerful systems seek to ensure that our attention is never truly ours."
+                    ],
+                    originalParagraph: "The lament is as old as education itself: The students aren't paying attention. But today, the problem of flighty or fragmented attention has reached truly catastrophic proportions. High school and college teachers overwhelmingly report that students' capacity for sustained, or deep attention has sharply decreased significantly impeding the forms of study — reading, looking at art, round-table discussions — once deemed central to the liberal arts. By some measures you are lucky these days to get 47 seconds of focused attention on a discrete task. \"Middlemarch\" is tough sledding on that timeline. So are most forms of human interaction out of which meaningful life, collective action and political engagement are made. We are witnessing the dark side of our new technological lives, whose extractive profit models amount to the systematic fracking of human beings: pumping vast quantities of high-pressure media content into our faces to force up a spume of the vaporous and intimate stuff called attention, which now trades on the open market. Increasingly powerful systems seek to ensure that our attention is never truly ours.",
+                    savedAt: Date.now() - 2000000
+                },
+                {
+                    title: "Quantum Computing Paradox (Hard)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'The Quantum Revolution' by Chen & Williams",
+                    sentences: [
+                        "Quantum computing represents a fundamental departure from classical computation, not merely an incremental improvement.",
+                        "While classical bits exist in definite states of 0 or 1, quantum bits or 'qubits' can exist in superposition, simultaneously embodying both states until measured.",
+                        "This peculiar property, combined with entanglement—where qubits become correlated in ways that defy classical intuition—enables quantum computers to explore multiple solution paths simultaneously.",
+                        "However, the very phenomena that grant quantum computers their power also make them extraordinarily fragile.",
+                        "Maintaining quantum coherence requires isolation from environmental interference at temperatures approaching absolute zero.",
+                        "Even the slightest thermal vibration or electromagnetic disturbance can cause decoherence, collapsing the delicate quantum states.",
+                        "This creates a paradox: the more powerful we make quantum computers by adding qubits, the more difficult they become to maintain and control.",
+                        "Current research focuses on error correction schemes that use multiple physical qubits to create single logical qubits, but this approach requires exponentially more resources.",
+                        "Thus, we find ourselves in a race between scaling up quantum systems and developing new methods to preserve their quantum properties."
+                    ],
+                    originalParagraph: "Quantum computing represents a fundamental departure from classical computation, not merely an incremental improvement. While classical bits exist in definite states of 0 or 1, quantum bits or 'qubits' can exist in superposition, simultaneously embodying both states until measured. This peculiar property, combined with entanglement—where qubits become correlated in ways that defy classical intuition—enables quantum computers to explore multiple solution paths simultaneously. However, the very phenomena that grant quantum computers their power also make them extraordinarily fragile. Maintaining quantum coherence requires isolation from environmental interference at temperatures approaching absolute zero. Even the slightest thermal vibration or electromagnetic disturbance can cause decoherence, collapsing the delicate quantum states. This creates a paradox: the more powerful we make quantum computers by adding qubits, the more difficult they become to maintain and control. Current research focuses on error correction schemes that use multiple physical qubits to create single logical qubits, but this approach requires exponentially more resources. Thus, we find ourselves in a race between scaling up quantum systems and developing new methods to preserve their quantum properties.",
+                    savedAt: Date.now() - 1000000
+                },
+                {
+                    title: "Consciousness and Free Will (Hard)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from 'The Illusion of Choice' by Dr. Sarah Martinez",
+                    sentences: [
+                        "The question of free will has plagued philosophers for millennia, but neuroscience is now providing disturbing answers.",
+                        "Brain imaging studies reveal that decisions appear in our neural activity several seconds before we become consciously aware of choosing.",
+                        "This suggests that what we experience as deliberate choice might be merely a post-hoc narrative our consciousness constructs to explain actions already initiated by unconscious processes.",
+                        "Yet if our choices are predetermined by neural events outside our awareness, the entire foundation of moral responsibility begins to crumble.",
+                        "Some philosophers argue this is a category error—that free will operates at a different level of description than neural firing patterns.",
+                        "Others embrace the implications, suggesting we must radically reconceptualize justice, moving from punishment to rehabilitation.",
+                        "But perhaps most unsettling is the recursive nature of this knowledge: knowing that free will might be an illusion could itself alter our behavior.",
+                        "Studies show that people who believe less in free will tend to act more antisocially, creating a self-fulfilling prophecy.",
+                        "We thus face an epistemic dilemma: the truth about free will might be something we cannot afford to believe."
+                    ],
+                    originalParagraph: "The question of free will has plagued philosophers for millennia, but neuroscience is now providing disturbing answers. Brain imaging studies reveal that decisions appear in our neural activity several seconds before we become consciously aware of choosing. This suggests that what we experience as deliberate choice might be merely a post-hoc narrative our consciousness constructs to explain actions already initiated by unconscious processes. Yet if our choices are predetermined by neural events outside our awareness, the entire foundation of moral responsibility begins to crumble. Some philosophers argue this is a category error—that free will operates at a different level of description than neural firing patterns. Others embrace the implications, suggesting we must radically reconceptualize justice, moving from punishment to rehabilitation. But perhaps most unsettling is the recursive nature of this knowledge: knowing that free will might be an illusion could itself alter our behavior. Studies show that people who believe less in free will tend to act more antisocially, creating a self-fulfilling prophecy. We thus face an epistemic dilemma: the truth about free will might be something we cannot afford to believe.",
+                    savedAt: Date.now()
+                }
+            ];
+            
+            // Initialize the puzzle bank with default puzzles
+            puzzleBank = defaultPuzzles;
+        }
+        
+        function togglePuzzleBank() {
+            const modal = document.getElementById('puzzleBankModal');
+            modal.classList.toggle('active');
+        }
+        
+        function closePuzzleBank() {
+            const modal = document.getElementById('puzzleBankModal');
+            modal.classList.remove('active');
+        }
+        
+        function updatePuzzleCount() {
+            const countElement = document.getElementById('puzzleCount');
+            if (countElement) {
+                countElement.textContent = puzzleBank.length;
+            }
+        }
+        
+        function updateBankDisplay() {
+            const bankContent = document.getElementById('bankContent');
+            
+            if (puzzleBank.length === 0) {
+                bankContent.innerHTML = '<p class="empty-message">No saved puzzles yet. Generate a worksheet and click "Save to Bank" to store it.</p>';
+            } else {
+                // Group puzzles by difficulty
+                const easyPuzzles = puzzleBank.filter(p => p.title.includes('(Easy)'));
+                const mediumPuzzles = puzzleBank.filter(p => p.title.includes('(Medium)'));
+                const hardPuzzles = puzzleBank.filter(p => p.title.includes('(Hard)'));
+                const otherPuzzles = puzzleBank.filter(p => !p.title.includes('(Easy)') && !p.title.includes('(Medium)') && !p.title.includes('(Hard)'));
+                
+                let html = '';
+                
+                if (easyPuzzles.length > 0) {
+                    html += '<h3 style="color: #57068c; margin: 20px 0 10px 0;">EASY PUZZLES</h3>';
+                    html += easyPuzzles.map((puzzle, index) => createPuzzleCard(puzzle, puzzleBank.indexOf(puzzle))).join('');
+                }
+                
+                if (mediumPuzzles.length > 0) {
+                    html += '<h3 style="color: #57068c; margin: 20px 0 10px 0;">MEDIUM PUZZLES</h3>';
+                    html += mediumPuzzles.map((puzzle, index) => createPuzzleCard(puzzle, puzzleBank.indexOf(puzzle))).join('');
+                }
+                
+                if (hardPuzzles.length > 0) {
+                    html += '<h3 style="color: #57068c; margin: 20px 0 10px 0;">HARD PUZZLES</h3>';
+                    html += hardPuzzles.map((puzzle, index) => createPuzzleCard(puzzle, puzzleBank.indexOf(puzzle))).join('');
+                }
+                
+                if (otherPuzzles.length > 0) {
+                    html += '<h3 style="color: #57068c; margin: 20px 0 10px 0;">OTHER PUZZLES</h3>';
+                    html += otherPuzzles.map((puzzle, index) => createPuzzleCard(puzzle, puzzleBank.indexOf(puzzle))).join('');
+                }
+                
+                bankContent.innerHTML = html;
+            }
+        }
+        
+        function createPuzzleCard(puzzle, index) {
+            return `
+                <div class="puzzle-card">
+                    <div class="puzzle-info">
+                        <div class="puzzle-title">${puzzle.title}</div>
+                        <div class="puzzle-meta">${puzzle.sentences.length} sentences • Saved ${new Date(puzzle.savedAt).toLocaleDateString()}</div>
+                        <div class="puzzle-preview">${puzzle.sentences[0].substring(0, 100)}...</div>
+                    </div>
+                    <div class="puzzle-actions">
+                        <button class="load-button" onclick="loadPuzzle(${index})">Load</button>
+                        <button class="delete-button" onclick="deletePuzzle(${index})">Delete</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function saveToBank() {
+            if (!currentWorksheetData) {
+                alert('Please generate a worksheet first before saving.');
+                return;
+            }
+            
+            const puzzleData = {
+                title: currentWorksheetData.title,
+                instructions: currentWorksheetData.instructions,
+                sourceText: currentWorksheetData.sourceText,
+                sentences: currentWorksheetData.sentences,
+                originalParagraph: currentWorksheetData.sentences.join(' '),
+                savedAt: Date.now()
+            };
+            
+            // Check if puzzle with same title exists
+            const existingIndex = puzzleBank.findIndex(p => p.title === puzzleData.title);
+            
+            if (existingIndex !== -1) {
+                if (confirm(`A puzzle titled "${puzzleData.title}" already exists. Do you want to overwrite it?`)) {
+                    puzzleBank[existingIndex] = puzzleData;
+                } else {
+                    return;
+                }
+            } else {
+                puzzleBank.push(puzzleData);
+            }
+            
+            // Save to localStorage immediately
+            try {
+                localStorage.setItem('textrisPuzzles', JSON.stringify(puzzleBank));
+                console.log('Saved ' + puzzleBank.length + ' puzzles to localStorage');
+            } catch (e) {
+                console.error('Failed to save to localStorage:', e);
+            }
+            
+            updateBankDisplay();
+            updatePuzzleCount();
+            alert(`Puzzle "${puzzleData.title}" has been saved to your bank!`);
+        }
+        
+        function loadPuzzle(index) {
+            const puzzle = puzzleBank[index];
+            if (!puzzle) return;
+            
+            // Fill in the form fields
+            document.getElementById('title').value = puzzle.title;
+            document.getElementById('instructions').value = puzzle.instructions;
+            document.getElementById('sourceText').value = puzzle.sourceText || '';
+            document.getElementById('paragraph').value = puzzle.originalParagraph;
+            
+            // Close the modal
+            closePuzzleBank();
+            
+            // Show edit section with the loaded sentences
+            editingSentences = [...puzzle.sentences];
+            showEditSection(puzzle.title, puzzle.instructions, puzzle.sourceText);
+        }
+        
+        function deletePuzzle(index) {
+            const puzzle = puzzleBank[index];
+            if (confirm(`Are you sure you want to delete "${puzzle.title}"?`)) {
+                puzzleBank.splice(index, 1);
+                updateBankDisplay();
+                updatePuzzleCount();
+            }
+        }
+        
+        function clearAllPuzzles() {
+            if (puzzleBank.length === 0) {
+                alert('No puzzles to clear.');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete ALL saved puzzles? This cannot be undone.')) {
+                puzzleBank = [];
+                
+                // Clear localStorage as well
+                try {
+                    localStorage.removeItem('textrisPuzzles');
+                    console.log('Cleared all puzzles from localStorage');
+                } catch (e) {
+                    console.error('Failed to clear localStorage:', e);
+                }
+                
+                updateBankDisplay();
+                updatePuzzleCount();
+            }
+        }
+        
+        function splitIntoSentences(text) {
+            // Improved sentence splitting that handles common abbreviations
+            const abbreviations = ['Dr.', 'Mr.', 'Mrs.', 'Ms.', 'Prof.', 'Sr.', 'Jr.', 'Ph.D', 'M.D', 'B.A', 'M.A', 'D.D.S', 'Ph.D.', 'U.S.', 'U.K.', 'E.U.', 'i.e.', 'e.g.', 'etc.', 'vs.'];
+            
+            // Replace abbreviations temporarily
+            let modifiedText = text;
+            const replacements = [];
+            abbreviations.forEach((abbr, index) => {
+                const placeholder = `__ABBR${index}__`;
+                const regex = new RegExp(abbr.replace('.', '\\.'), 'g');
+                if (modifiedText.includes(abbr)) {
+                    replacements.push({ placeholder, abbr });
+                    modifiedText = modifiedText.replace(regex, placeholder);
+                }
+            });
+            
+            // Split by sentence-ending punctuation followed by space and capital letter
+            let sentences = modifiedText.match(/[^.!?]+[.!?]+/g) || [];
+            
+            // Restore abbreviations
+            sentences = sentences.map(sentence => {
+                let restored = sentence;
+                replacements.forEach(({ placeholder, abbr }) => {
+                    restored = restored.replace(new RegExp(placeholder, 'g'), abbr);
+                });
+                return restored.trim();
+            });
+            
+            // Filter out empty sentences and clean up
+            return sentences.filter(s => s.length > 0);
+        }
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function generateWorksheet() {
+            const title = document.getElementById('title').value || 'Textris';
+            const instructions = document.getElementById('instructions').value || 'Please read the following sentences and place them in their correct order.';
+            const sourceText = document.getElementById('sourceText').value;
+            const paragraph = document.getElementById('paragraph').value.trim();
+            
+            if (!paragraph) {
+                alert('Please enter a paragraph to generate the worksheet.');
+                return;
+            }
+            
+            // Split into sentences
+            const sentences = splitIntoSentences(paragraph);
+            
+            if (sentences.length < 2) {
+                alert('Please enter a paragraph with at least 2 sentences.');
+                return;
+            }
+            
+            // Store the preliminary data
+            editingSentences = [...sentences];
+            
+            // Show edit section instead of directly generating worksheet
+            showEditSection(title, instructions, sourceText);
+        }
+        
+        function showEditSection(title, instructions, sourceText) {
+            // Hide preview notice if it was showing
+            document.getElementById('previewNotice').classList.remove('active');
+            
+            // Hide worksheet if it was showing
+            const worksheetDiv = document.getElementById('worksheet');
+            worksheetDiv.classList.remove('active');
+            
+            // Build the sentence editor
+            const editorHTML = editingSentences.map((sentence, index) => `
+                <div class="sentence-editor-item" data-index="${index}">
+                    <span class="sentence-editor-number">${index + 1}.</span>
+                    <input type="text" class="sentence-editor-input" value="${sentence.replace(/"/g, '&quot;')}" onchange="updateSentence(${index}, this.value)">
+                    <button class="remove-sentence-btn" onclick="removeSentence(${index})">Remove</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('sentenceEditor').innerHTML = editorHTML;
+            
+            // Show edit section
+            document.getElementById('editSection').classList.add('active');
+            
+            // Store metadata for later use
+            document.getElementById('editSection').dataset.title = title;
+            document.getElementById('editSection').dataset.instructions = instructions;
+            document.getElementById('editSection').dataset.sourceText = sourceText;
+            
+            // Scroll to edit section
+            document.getElementById('editSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function updateSentence(index, value) {
+            editingSentences[index] = value;
+        }
+        
+        function removeSentence(index) {
+            if (editingSentences.length <= 2) {
+                alert('You must have at least 2 sentences for the worksheet.');
+                return;
+            }
+            editingSentences.splice(index, 1);
+            refreshEditor();
+        }
+        
+        function addSentence() {
+            editingSentences.push('');
+            refreshEditor();
+            // Focus on the new input
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.sentence-editor-input');
+                inputs[inputs.length - 1].focus();
+            }, 100);
+        }
+        
+        function refreshEditor() {
+            const editorHTML = editingSentences.map((sentence, index) => `
+                <div class="sentence-editor-item" data-index="${index}">
+                    <span class="sentence-editor-number">${index + 1}.</span>
+                    <input type="text" class="sentence-editor-input" value="${sentence.replace(/"/g, '&quot;')}" onchange="updateSentence(${index}, this.value)">
+                    <button class="remove-sentence-btn" onclick="removeSentence(${index})">Remove</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('sentenceEditor').innerHTML = editorHTML;
+        }
+        
+        function cancelEdit() {
+            document.getElementById('editSection').classList.remove('active');
+            editingSentences = [];
+        }
+        
+        function finalizeWorksheet() {
+            // Get the metadata
+            const editSection = document.getElementById('editSection');
+            const title = editSection.dataset.title;
+            const instructions = editSection.dataset.instructions;
+            const sourceText = editSection.dataset.sourceText;
+            
+            // Filter out empty sentences
+            const finalSentences = editingSentences.filter(s => s.trim().length > 0);
+            
+            if (finalSentences.length < 2) {
+                alert('Please ensure you have at least 2 non-empty sentences.');
+                return;
+            }
+            
+            // Hide edit section
+            document.getElementById('editSection').classList.remove('active');
+            
+            // Create array of numbers 1 through n
+            const numbers = Array.from({length: finalSentences.length}, (_, i) => i + 1);
+            
+            // Shuffle the numbers to create random labeling
+            const shuffledNumbers = shuffleArray(numbers);
+            
+            // Store worksheet data for different print versions
+            currentWorksheetData = {
+                title,
+                instructions,
+                sourceText,
+                sentences: finalSentences,
+                shuffledNumbers
+            };
+            
+            // Generate worksheet HTML
+            let worksheetHTML = `
+                <div class="worksheet-header">
+                    <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
+                    <div class="worksheet-instructions">
+                        ${sourceText ? `Please read the following sentences from ${sourceText}. ` : ''}${instructions}
+                    </div>
+                </div>
+            `;
+            
+            // Add sentences in original order but with shuffled numbers
+            finalSentences.forEach((sentence, index) => {
+                worksheetHTML += `
+                    <div class="sentence-item">
+                        <div class="sentence-number">${shuffledNumbers[index]}</div>
+                        <div class="sentence-text">${sentence}</div>
+                    </div>
+                `;
+            });
+            
+            // Add submission sheet for students (will be hidden for instructor version)
+            worksheetHTML += `
+                <div class="submission-sheet hide-for-instructor" id="submissionSheet">
+                    <div class="submission-title">Textris Submission Sheet</div>
+                    
+                    <div class="team-info">
+                        <div class="team-line"><span>Team Name:</span> _________________________________</div>
+                        <div class="team-line"><span>Members:</span> _________________________________</div>
+                        <div class="team-line"><span></span> _________________________________</div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 1</div>
+                        <div class="attempt-grid">
+                            ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                        </div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 2</div>
+                        <div class="attempt-grid">
+                            ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                        </div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 3</div>
+                        <div class="attempt-grid">
+                            ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add answer section (only visible in instructor version)
+            worksheetHTML += `
+                <div class="answer-section hide-for-print" id="answerSection">
+                    <div class="answer-label">INSTRUCTOR ANSWER KEY:</div>
+                    <div class="answer-text">${shuffledNumbers.join(', ')}</div>
+                </div>
+            `;
+            
+            // Display worksheet
+            const worksheetDiv = document.getElementById('worksheet');
+            worksheetDiv.innerHTML = worksheetHTML;
+            worksheetDiv.classList.add('active');
+            
+            // Show preview notice
+            document.getElementById('previewNotice').classList.add('active');
+            
+            // Clear editing sentences
+            editingSentences = [];
+            
+            // Scroll to worksheet
+            worksheetDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function printStudentVersion() {
+            if (!currentWorksheetData) {
+                alert('Please generate a worksheet first.');
+                return;
+            }
+            
+            // Hide answer section for student print
+            const answerSection = document.getElementById('answerSection');
+            if (answerSection) {
+                answerSection.style.display = 'none';
+            }
+            
+            // Show submission sheet for students
+            const submissionSheet = document.getElementById('submissionSheet');
+            if (submissionSheet) {
+                submissionSheet.style.display = 'block';
+            }
+            
+            window.print();
+            
+            // Restore answer section after printing
+            if (answerSection) {
+                answerSection.style.display = 'block';
+            }
+        }
+        
+        function printInstructorVersion() {
+            if (!currentWorksheetData) {
+                alert('Please generate a worksheet first.');
+                return;
+            }
+            
+            // Hide submission sheet for instructor print
+            const submissionSheet = document.getElementById('submissionSheet');
+            if (submissionSheet) {
+                submissionSheet.style.display = 'none';
+            }
+            
+            // Make answer section visible for instructor print
+            const answerSection = document.getElementById('answerSection');
+            if (answerSection) {
+                answerSection.classList.remove('hide-for-print');
+                answerSection.style.display = 'block';
+            }
+            
+            window.print();
+            
+            // Restore submission sheet and hide answer section again after printing
+            if (submissionSheet) {
+                submissionSheet.style.display = 'block';
+            }
+            if (answerSection) {
+                answerSection.classList.add('hide-for-print');
+            }
+        }
+        
+        function resetForm() {
+            document.getElementById('title').value = 'Textris';
+            document.getElementById('instructions').value = 'Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.';
+            document.getElementById('sourceText').value = '';
+            document.getElementById('paragraph').value = '';
+            document.getElementById('worksheet').classList.remove('active');
+            document.getElementById('worksheet').innerHTML = '';
+            document.getElementById('previewNotice').classList.remove('active');
+            currentWorksheetData = null;
+        }
+    </script>
+</body>
+</html>
