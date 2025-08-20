@@ -677,6 +677,61 @@
             display: none !important;
         }
 
+        /* Student version cut-line sentence items */
+        .sentence-item-cut {
+            display: flex;
+            margin: 10px 0;
+            border-top: 2px dashed #999;
+            border-bottom: 2px dashed #999;
+            border-left: 2px dashed #999;
+            border-right: 2px dashed #999;
+            background: white;
+            align-items: center;
+            position: relative;
+        }
+
+        .sentence-item-cut::before {
+    content: "✂";
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    background: white;
+    padding: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+.sentence-item-cut::after {
+    content: "✂";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    background: white;
+    padding: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+        .sentence-number-cut {
+            font-weight: bold;
+            font-size: 1.4em;
+            padding: 15px 20px;
+            min-width: 60px;
+            color: #000;
+            text-align: center;
+            border-right: 1px solid #000;
+        }
+
+        .sentence-text-cut {
+            flex: 1;
+            font-size: 1em;
+            line-height: 1.4;
+            color: #000;
+            padding: 15px 20px;
+        }
+
         @media print {
             .worksheet-preview-modal {
                 display: none !important;
@@ -794,7 +849,7 @@
             
             <div class="input-group">
                 <label for="instructions">Instructions (optional):</label>
-                <textarea id="instructions" placeholder="Enter custom instructions for your worksheet...">Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.</textarea>
+                <textarea id="instructions" placeholder="Enter custom instructions for your worksheet...">Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.</textarea>
             </div>
             
             <div class="input-group">
@@ -910,7 +965,7 @@
                 // EASY PUZZLES
                 {
                     title: "Future Shock (Easy)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from Alvin Toffler's 'Future Shock' (1970)",
                     sentences: [
                         "If the last 50,000 years of man's existence were divided into lifetimes of approximately sixty-two years each, there have been about 800 such lifetimes.",
@@ -928,7 +983,7 @@
 
                 {
                     title: "Technology Assessment Challenge (Easy)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from The Technology Assessment Act of 1972",
                     sentences: [
                         "As technology continues to change and expand rapidly, its applications are large and growing in scale; and increasingly extensive, pervasive, and critical in their impact— beneficial and adverse—on the natural and social environment.",
@@ -942,7 +997,7 @@
                 
                 {
                 title: "Economics and Ethics (Easy)",
-                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                 sourceText: "from Iain King's 'Can Economics Be Ethical?'",
                 sentences: [
                     "There are different views on where ethics should apply when someone makes an economic decision.",
@@ -960,7 +1015,7 @@
 
                 {
                     title: "Cognitive Load Theory (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from John Sweller's 'Cognitive Load Theory and Educational Technology'",
                     sentences: [
                         "The success or otherwise of educational technology is affected by the characteristics of human cognitive architecture.",
@@ -974,7 +1029,7 @@
 
                 {
                     title: "Internet's Cognitive Effects (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from Nicholas Carr's 'The Web Shatters Focus, Rewires Brains'",
                     sentences: [
                         "The mental consequences of our online info-crunching are not universally bad.",
@@ -992,7 +1047,7 @@
                 },
                 {
                     title: "Genetic Engineering and Pharming (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from Emily Anthes' 'Frankenstein's Cat'",
                     sentences: [
                         "When scientists first learned how to edit the genomes of animals, they began to imagine all the ways they could use this new power.",
@@ -1006,7 +1061,7 @@
                 },
                 {
                     title: "Writer-Based Prose (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from Linda Flower's 'Writer-Based Prose: A Cognitive Basis for Problems in Writing' (College English, 1979)",
                     sentences: [
                         "If writing is simply the act of \"expressing what you think\" or \"saying what you mean,\" why is writing often such a difficult thing to do?",
@@ -1024,7 +1079,7 @@
                 // HARD PUZZLES
                 {
                     title: "Chess Master's Dilemma (Hard)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from David Perkin's 'Transfer of Learning'",
                     sentences: [
                         "Once upon a time, an astute and beneficent leader in a remote country anticipated increasing aggression from a territory hungry neighbor.",
@@ -1041,7 +1096,7 @@
                 },
                 {
                     title: "Fracking Our Attention (Hard)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from 'Powerful Forces Are Fracking Our Attention. We Can Fight Back.' by D. Graham Burnett, Alyssa Loh and Peter Schmidt, 2023",
                     sentences: [
                         "The lament is as old as education itself: The students aren't paying attention.",
@@ -1058,7 +1113,7 @@
                 },
                 {
                     title: "Organic Agriculture Paradox (Hard)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                     sourceText: "from Bryan Walsh's 'Whole Food Blues: Why Organic Agriculture May Not Be So Sustainable'",
                     sentences: [
                         "In an increasingly hot and crowded world, the only sustainable way to live is to get more out of less.",
@@ -1075,7 +1130,7 @@
                 },
                 {
                 title: "Television's Influence on Children (Hard)",
-                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.",
                 sourceText: "from Newton N. Minow's 1961 speech 'Television and the Public Interest'",
                 sentences: [
                     "Certainly, I hope you will agree that ratings should have little influence where children are concerned.",
@@ -1545,12 +1600,12 @@
                 </div>
             `;
             
-            // Add shuffled sentences with sequential numbers for cutting
+            // Add shuffled sentences with cut-line borders
             shuffledSentences.forEach((sentence, index) => {
                 studentHTML += `
-                    <div class="sentence-item">
-                        <div class="sentence-number">${index + 1}</div>
-                        <div class="sentence-text">${sentence}</div>
+                    <div class="sentence-item-cut">
+                        <div class="sentence-number-cut">${index + 1}</div>
+                        <div class="sentence-text-cut">${sentence}</div>
                     </div>
                 `;
             });
@@ -1572,7 +1627,7 @@
                             ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                             <span> You've got the first ______ sentence(s) in the right spots!
+                            <span>You've got the first ______ sentence(s) in the right spots!</span>
                         </div>
                     </div>
                     
@@ -1582,7 +1637,7 @@
                             ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                             <span> You've got the first ______ sentence(s) in the right spots!
+                            <span>You've got the first ______ sentence(s) in the right spots!</span>
                         </div>
                     </div>
                     
@@ -1592,7 +1647,7 @@
                             ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                             <span> You've got the first ______ sentence(s) in the right spots!
+                            <span>You've got the first ______ sentence(s) in the right spots!</span>
                         </div>
                     </div>
                 </div>
@@ -1713,12 +1768,65 @@
                 .answer-section { margin-top: 30px; padding: 20px; border: 2px solid #57068c; background: #f9f7fc; }
                 .answer-label { font-weight: bold; font-size: 1.2em; display: block; color: #57068c; margin-bottom: 10px; }
                 .answer-text { font-size: 1.1em; color: #000; display: block; }
+                .sentence-item-cut {
+    display: flex;
+    margin: 10px 0;
+    border-top: 2px dashed #999;
+    border-bottom: 2px dashed #999;
+    border-left: 2px dashed #999;
+    border-right: 2px dashed #999;
+    background: white;
+    align-items: center;
+    position: relative;
+}
+
+.sentence-item-cut::before {
+    content: "✂";
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    background: white;
+    padding: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+.sentence-item-cut::after {
+    content: "✂";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    background: white;
+    padding: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+.sentence-number-cut {
+    font-weight: bold;
+    font-size: 1.4em;
+    padding: 15px 20px;
+    min-width: 60px;
+    color: #000;
+    text-align: center;
+    border-right: 1px solid #000;
+}
+
+.sentence-text-cut {
+    flex: 1;
+    font-size: 1em;
+    line-height: 1.4;
+    color: #000;
+    padding: 15px 20px;
+}
             `;
         }
         
         function resetForm() {
             document.getElementById('title').value = 'UnJumble';
-            document.getElementById('instructions').value = 'Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.';
+            document.getElementById('instructions').value = 'Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get a 24-hour extension.';
             document.getElementById('sourceText').value = '';
             document.getElementById('paragraph').value = '';
             document.getElementById('worksheet').classList.remove('active');
