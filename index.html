@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Textris Worksheet Generator</title>
+    <title>UnJumble Worksheet Generator</title>
     <style>
         * {
             margin: 0;
@@ -411,7 +411,7 @@
         
         .feedback-line span {
             display: inline-block;
-            width: 200px;
+            width: auto;
         }
         
         .answer-section {
@@ -640,6 +640,48 @@
         .load-button:hover {
             background: #330452;
         }
+
+        /* Worksheet Preview Modal Styles */
+        .worksheet-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1001;
+        }
+
+        .worksheet-preview-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .worksheet-modal-content {
+            width: 95%;
+            max-width: 1000px;
+            max-height: 90vh;
+        }
+
+        .worksheet-preview-body {
+            padding: 40px 60px;
+            background: white;
+            font-family: 'Times New Roman', serif;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        /* Hide elements in modal preview that should only show when printing */
+        .worksheet-preview-body .hide-for-print {
+            display: none !important;
+        }
+
+        @media print {
+            .worksheet-preview-modal {
+                display: none !important;
+            }
+        }
         
         @media print {
             body {
@@ -694,13 +736,47 @@
                 display: block !important;
             }
         }
+
+                /* Add to existing CSS for modal preview */
+        .worksheet-preview-body .worksheet-header {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        .worksheet-preview-body .logo-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .worksheet-preview-body .worksheet-logo {
+            height: 40px;
+        }
+
+        .worksheet-preview-body .instructions-container {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .worksheet-preview-body .worksheet-instructions {
+            font-size: 0.95em;
+            line-height: 1.4;
+            text-align: left;
+            color: #000;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="logo">
-            <h1>Textris Generator</h1>
+            <h1>UnJumble Worksheet Generator</h1>
         </div>
         
         <div class="input-section">
@@ -713,7 +789,7 @@
             
             <div class="input-group">
                 <label for="title">Worksheet Title:</label>
-                <input type="text" id="title" placeholder="e.g., Transfer of Learning" value="Textris">
+                <input type="text" id="title" placeholder="e.g., Transfer of Learning" value="UnJumble">
             </div>
             
             <div class="input-group">
@@ -728,7 +804,7 @@
             
             <div class="input-group">
                 <label for="paragraph">Paste your paragraph:</label>
-                <textarea id="paragraph" placeholder="Paste the paragraph you want to turn into a Textris worksheet..."></textarea>
+                <textarea id="paragraph" placeholder="Paste the paragraph you want to turn into an UnJumble puzzle game..."></textarea>
             </div>
             
             <div class="button-group">
@@ -784,6 +860,25 @@
             </div>
         </div>
     </div>
+
+    <!-- Worksheet Preview Modal -->
+        <div class="worksheet-preview-modal" id="worksheetPreviewModal">
+            <div class="modal-overlay" onclick="closeWorksheetPreview()"></div>
+            <div class="modal-content worksheet-modal-content">
+                <div class="modal-header">
+                    <h2>Worksheet Preview</h2>
+                    <div class="modal-header-buttons">
+                        <button class="secondary-button" onclick="printStudentVersion()">Print Student Version</button>
+                        <button class="secondary-button" onclick="printInstructorVersion()">Print Instructor Copy</button>
+                        <button class="secondary-button" onclick="saveToBank()">Save to Bank</button>
+                        <button class="close-button" onclick="closeWorksheetPreview()">×</button>
+                    </div>
+                </div>
+                <div class="modal-body worksheet-preview-body" id="worksheetPreviewContent">
+                    <!-- Worksheet content will be inserted here -->
+                </div>
+            </div>
+        </div>
     
     <script>
         let currentWorksheetData = null;
@@ -794,7 +889,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Try to load from localStorage if available (won't work in Claude, but will work when deployed)
             try {
-                const saved = localStorage.getItem('textrisPuzzles');
+                const saved = localStorage.getItem('unjumblePuzzles');
                 if (saved) {
                     puzzleBank = JSON.parse(saved);
                 } else {
@@ -814,7 +909,57 @@
             const defaultPuzzles = [
                 // EASY PUZZLES
                 {
-                    title: "Cognitive Load Theory (Easy)",
+                    title: "Future Shock (Easy)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from Alvin Toffler's 'Future Shock' (1970)",
+                    sentences: [
+                        "If the last 50,000 years of man's existence were divided into lifetimes of approximately sixty-two years each, there have been about 800 such lifetimes.",
+                        "Of these 800, fully 650 were spent in caves.",
+                        "Only during the last seventy lifetimes has it been possible to communicate effectively from one lifetime to another, as writing made it possible to do.",
+                        "Only during the last six lifetimes did masses of men ever see a printed word.",
+                        "Only during the last four has it been possible to measure time with any precision.",
+                        "Only in the last two has anyone anywhere used an electric motor.",
+                        "And the overwhelming majority of all the material goods we use in daily life today have been developed within the present, the 800th, lifetime.",
+                        "This 800th lifetime marks a sharp break with all past human experience because during this lifetime man's relationship to resources has reversed itself."
+                    ],
+                    originalParagraph: "If the last 50,000 years of man's existence were divided into lifetimes of approximately sixty-two years each, there have been about 800 such lifetimes. Of these 800, fully 650 were spent in caves. Only during the last seventy lifetimes has it been possible to communicate effectively from one lifetime to another, as writing made it possible to do. Only during the last six lifetimes did masses of men ever see a printed word. Only during the last four has it been possible to measure time with any precision. Only in the last two has anyone anywhere used an electric motor. And the overwhelming majority of all the material goods we use in daily life today have been developed within the present, the 800th, lifetime. This 800th lifetime marks a sharp break with all past human experience because during this lifetime man's relationship to resources has reversed itself.",
+                    savedAt: Date.now() - 3500000
+                },
+
+                {
+                    title: "Technology Assessment Challenge (Easy)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from The Technology Assessment Act of 1972",
+                    sentences: [
+                        "As technology continues to change and expand rapidly, its applications are large and growing in scale; and increasingly extensive, pervasive, and critical in their impact— beneficial and adverse—on the natural and social environment.",
+                        "Therefore, it is essential that, to the fullest extent possible, the consequences of technological applications be anticipated, understood, and considered in determination of public policy on existing and emerging national problems.",
+                        "The Congress further finds that the Federal agencies presently responsible directly to the Congress are not designed to provide the legislative branch with adequate and timely information, independently developed, relating to the potential impact of technological applications, and the present mechanisms of the Congress do not and are not designed to provide the legislative branch with such information.",
+                        "Accordingly, it is necessary for the Congress to equip itself with new and effective means for securing competent, unbiased information concerning the physical, biological, economic, social, and political effects of such applications; and utilize this information, whenever appropriate, as one factor in the legislative assessment of matters pending before the Congress, particularly in those instances where the Federal Government may be called upon to consider support for, or management or regulation of, technological applications."
+                    ],
+                    originalParagraph: "As technology continues to change and expand rapidly, its applications are large and growing in scale; and increasingly extensive, pervasive, and critical in their impact— beneficial and adverse—on the natural and social environment. Therefore, it is essential that, to the fullest extent possible, the consequences of technological applications be anticipated, understood, and considered in determination of public policy on existing and emerging national problems. The Congress further finds that the Federal agencies presently responsible directly to the Congress are not designed to provide the legislative branch with adequate and timely information, independently developed, relating to the potential impact of technological applications, and the present mechanisms of the Congress do not and are not designed to provide the legislative branch with such information. Accordingly, it is necessary for the Congress to equip itself with new and effective means for securing competent, unbiased information concerning the physical, biological, economic, social, and political effects of such applications; and utilize this information, whenever appropriate, as one factor in the legislative assessment of matters pending before the Congress, particularly in those instances where the Federal Government may be called upon to consider support for, or management or regulation of, technological applications.",
+                    savedAt: Date.now() - 500000
+                },
+                
+                {
+                title: "Economics and Ethics (Easy)",
+                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                sourceText: "from Iain King's 'Can Economics Be Ethical?'",
+                sentences: [
+                    "There are different views on where ethics should apply when someone makes an economic decision.",
+                    "Consider Adam Smith, widely regarded as the founder of modern economics.",
+                    "He was a moral philosopher who believed sympathy for others was the basis for ethics (we would call it empathy nowadays).",
+                    "But one of his key insights in The Wealth of Nations was that acting on this empathy could be counter-productive—he observed people becoming better off when they put their own empathy aside, and interacted in a self-interested way.",
+                    "Smith justifies selfish behavior by the outcome.",
+                    "Whenever planners use cost-benefit analysis to justify a new railway line, or someone retrains to boost his or her earning power, or a shopper buys one to get one free, they are using the same approach: empathizing with someone, and seeking an outcome that makes that person as well off as possible—although the person they are empathizing with may be themselves in the future."
+                ],
+                originalParagraph: "There are different views on where ethics should apply when someone makes an economic decision. Consider Adam Smith, widely regarded as the founder of modern economics. He was a moral philosopher who believed sympathy for others was the basis for ethics (we would call it empathy nowadays). But one of his key insights in The Wealth of Nations was that acting on this empathy could be counter-productive—he observed people becoming better off when they put their own empathy aside, and interacted in a self-interested way. Smith justifies selfish behavior by the outcome. Whenever planners use cost-benefit analysis to justify a new railway line, or someone retrains to boost his or her earning power, or a shopper buys one to get one free, they are using the same approach: empathizing with someone, and seeking an outcome that makes that person as well off as possible—although the person they are empathizing with may be themselves in the future.",
+                savedAt: Date.now() - 4000000
+            },
+                
+                // MEDIUM PUZZLES
+
+                {
+                    title: "Cognitive Load Theory (Medium)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
                     sourceText: "from John Sweller's 'Cognitive Load Theory and Educational Technology'",
                     sentences: [
@@ -826,36 +971,59 @@
                     originalParagraph: "The success or otherwise of educational technology is affected by the characteristics of human cognitive architecture. Technology-based instruction used without reference to the instructional design principles that flow from human cognition is likely to be random in its effectiveness. Cognitive load theory (Sweller et al. 2011, 2019), as an instructional design theory based on our rapidly expanding knowledge of human cognition, is well-suited to provide guidance suggesting which educational technologies are likely to be effective and how they should be used. This paper summarises the theory and applies it to learning that occurs with the assistance of educational technology.",
                     savedAt: Date.now() - 8000000
                 },
+
                 {
-                    title: "Scientific Method (Easy)",
+                    title: "Internet's Cognitive Effects (Medium)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'Introduction to Scientific Research'",
+                    sourceText: "from Nicholas Carr's 'The Web Shatters Focus, Rewires Brains'",
                     sentences: [
-                        "The scientific method begins with careful observation of natural phenomena.",
-                        "From these observations, scientists formulate hypotheses to explain what they have seen.",
-                        "These hypotheses are then tested through controlled experiments.",
-                        "The results either support or refute the original hypothesis, leading to new understanding."
+                        "The mental consequences of our online info-crunching are not universally bad.",
+                        "Certain cognitive skills are strengthened by our use of computers and the Net.",
+                        "These tend to involve more primitive mental functions, such as hand-eye coordination, reflex response, and the processing of visual cues.",
+                        "One much-cited study of video gaming revealed that after just 10 days of playing action games on computers, a group of young people had significantly boosted the speed with which they could shift their visual focus between various images and tasks.",
+                        "It's likely that Web browsing also strengthens brain functions related to fast-paced problem solving, particularly when it requires spotting patterns in a welter of data.",
+                        "A British study of the way women search for medical information online indicated that an experienced Internet user can, at least in some cases, assess the trustworthiness and probable value of a Web page in a matter of seconds.",
+                        "The more we practice surfing and scanning, the more adept our brain becomes at those tasks.",
+                        "But it would be a serious mistake to look narrowly at such benefits and conclude that the Web is making us smarter."
                     ],
-                    originalParagraph: "The scientific method begins with careful observation of natural phenomena. From these observations, scientists formulate hypotheses to explain what they have seen. These hypotheses are then tested through controlled experiments. The results either support or refute the original hypothesis, leading to new understanding.",
-                    savedAt: Date.now() - 7000000
+                    originalParagraph:  "The mental consequences of our online info-crunching are not universally bad. Certain cognitive skills are strengthened by our use of computers and the Net. These tend to involve more primitive mental functions, such as hand-eye coordination, reflex response, and the processing of visual cues. One much-cited study of video gaming revealed that after just 10 days of playing action games on computers, a group of young people had significantly boosted the speed with which they could shift their visual focus between various images and tasks. It's likely that Web browsing also strengthens brain functions related to fast-paced problem solving, particularly when it requires spotting patterns in a welter of data. A British study of the way women search for medical information online indicated that an experienced Internet user can, at least in some cases, assess the trustworthiness and probable value of a Web page in a matter of seconds. The more we practice surfing and scanning, the more adept our brain becomes at those tasks. But it would be a serious mistake to look narrowly at such benefits and conclude that the Web is making us smarter.",
+                    
+                    savedAt: Date.now() - 3000000
                 },
                 {
-                    title: "Water Cycle (Easy)",
+                    title: "Genetic Engineering and Pharming (Medium)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'Earth Science Basics'",
+                    sourceText: "from Emily Anthes' 'Frankenstein's Cat'",
                     sentences: [
-                        "Water evaporates from oceans, lakes, and rivers due to heat from the sun.",
-                        "This water vapor rises into the atmosphere where it cools and condenses into clouds.",
-                        "When the clouds become heavy with moisture, precipitation occurs as rain or snow.",
-                        "The water then flows back to the oceans through rivers and underground streams, completing the cycle."
+                        "When scientists first learned how to edit the genomes of animals, they began to imagine all the ways they could use this new power.",
+                        "Creating brightly colored novelty pets was not a high priority.",
+                        "Instead, most researchers envisioned far more consequential applications, hoping to create genetically engineered animals that saved human lives.",
+                        "One enterprise is now delivering on this dream.",
+                        "Welcome to the world of \"pharming,\" in which simple genetic tweaks turn animals into living pharmaceutical factories."
                     ],
-                    originalParagraph: "Water evaporates from oceans, lakes, and rivers due to heat from the sun. This water vapor rises into the atmosphere where it cools and condenses into clouds. When the clouds become heavy with moisture, precipitation occurs as rain or snow. The water then flows back to the oceans through rivers and underground streams, completing the cycle.",
-                    savedAt: Date.now() - 6000000
+                    originalParagraph: "When scientists first learned how to edit the genomes of animals, they began to imagine all the ways they could use this new power. Creating brightly colored novelty pets was not a high priority. Instead, most researchers envisioned far more consequential applications, hoping to create genetically engineered animals that saved human lives. One enterprise is now delivering on this dream. Welcome to the world of \"pharming,\" in which simple genetic tweaks turn animals into living pharmaceutical factories.",
+                    savedAt: Date.now() - 1500000
+                },
+                {
+                    title: "Writer-Based Prose (Medium)",
+                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                    sourceText: "from Linda Flower's 'Writer-Based Prose: A Cognitive Basis for Problems in Writing' (College English, 1979)",
+                    sentences: [
+                        "If writing is simply the act of \"expressing what you think\" or \"saying what you mean,\" why is writing often such a difficult thing to do?",
+                        "And why do papers that do express what the writer meant (to his or her own satisfaction) often fail to communicate the same meaning to a reader?",
+                        "Although we often equate writing with the straightforward act of \"saying what we mean,\" the mental struggles writers go through and the misinterpretations readers still make suggest that we need a better model of this process.",
+                        "Modern communication theory and practical experience agree; writing prose that actually communicates what we mean to another person demands more than a simple act of self-expression.",
+                        "What communication theory does not tell us is how writers do it.",
+                        "An alternative to the \"think it/say it\" model is to say that effective writers do not simply express thought but transform it in certain complex but describable ways for the needs of a reader.",
+                        "Conversely, we may find that ineffective writers are indeed merely \"expressing\" themselves by offering up an unretouched and underprocessed version of their own thought."
+                    ],
+                    originalParagraph: "If writing is simply the act of \"expressing what you think\" or \"saying what you mean,\" why is writing often such a difficult thing to do? And why do papers that do express what the writer meant (to his or her own satisfaction) often fail to communicate the same meaning to a reader? Although we often equate writing with the straightforward act of \"saying what we mean,\" the mental struggles writers go through and the misinterpretations readers still make suggest that we need a better model of this process. Modern communication theory and practical experience agree; writing prose that actually communicates what we mean to another person demands more than a simple act of self-expression. What communication theory does not tell us is how writers do it. An alternative to the \"think it/say it\" model is to say that effective writers do not simply express thought but transform it in certain complex but describable ways for the needs of a reader. Conversely, we may find that ineffective writers are indeed merely \"expressing\" themselves by offering up an unretouched and underprocessed version of their own thought.",
+                    savedAt: Date.now() - 800000
                 },
                 
-                // MEDIUM PUZZLES
+                // HARD PUZZLES
                 {
-                    title: "Chess Master's Dilemma (Medium)",
+                    title: "Chess Master's Dilemma (Hard)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
                     sourceText: "from David Perkin's 'Transfer of Learning'",
                     sentences: [
@@ -871,38 +1039,6 @@
                     originalParagraph: "Once upon a time, an astute and beneficent leader in a remote country anticipated increasing aggression from a territory hungry neighbor. Recognizing that the neighbor had more military might, the leader concluded that his people would have to outthink, rather than outpower, the enemy. Undistinguished in its military armament and leadership, the country did have one remarkable resource: the reigning world chess master, undefeated for over twenty years. \"Aha,\" the leader said to himself, \"we will recruit this intellect, honed so long on the whetstone of chess, teach him some politics and military theory, and then outmaneuver the enemy with the help of his genius.\" A fanciful tale, to be sure, but consider the leaders plan for a moment: Is it disastrously naive, possibly helpful, or a good bet? In fact, the tale has no definite conclusion. Rather, it is the beginning of another tale, a tale about psychology and the human intellect that research is gradually spinning. Questions like that of the chess master's neuropolitical and military potential stand in the center of one of the most puzzling and important issues that cognitive psychology has addressed: the roles of general and of context-specific knowledge in thinking.",
                     savedAt: Date.now() - 5000000
                 },
-                {
-                    title: "Climate Change Impact (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'Environmental Science Quarterly'",
-                    sentences: [
-                        "Rising global temperatures are causing unprecedented changes in Earth's climate systems.",
-                        "Arctic ice sheets are melting at rates that exceed even the most pessimistic predictions from a decade ago.",
-                        "This accelerated melting contributes to rising sea levels, threatening coastal communities worldwide.",
-                        "Meanwhile, changing ocean temperatures disrupt marine ecosystems and alter weather patterns.",
-                        "These shifts create feedback loops that further accelerate warming, making intervention increasingly urgent.",
-                        "Scientists argue that we have less than a decade to implement substantial changes to avoid catastrophic tipping points."
-                    ],
-                    originalParagraph: "Rising global temperatures are causing unprecedented changes in Earth's climate systems. Arctic ice sheets are melting at rates that exceed even the most pessimistic predictions from a decade ago. This accelerated melting contributes to rising sea levels, threatening coastal communities worldwide. Meanwhile, changing ocean temperatures disrupt marine ecosystems and alter weather patterns. These shifts create feedback loops that further accelerate warming, making intervention increasingly urgent. Scientists argue that we have less than a decade to implement substantial changes to avoid catastrophic tipping points.",
-                    savedAt: Date.now() - 4000000
-                },
-                {
-                    title: "Digital Revolution (Medium)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'Technology and Society'",
-                    sentences: [
-                        "The digital revolution has fundamentally transformed how humans communicate, work, and think.",
-                        "What began as simple computing machines in the mid-20th century has evolved into a global network of interconnected devices.",
-                        "This transformation happened so rapidly that regulatory frameworks and social norms struggle to keep pace.",
-                        "Children born today will never know a world without instant access to vast amounts of information.",
-                        "Yet this unprecedented connectivity brings new challenges: privacy concerns, misinformation, and digital addiction.",
-                        "As we navigate this new landscape, we must balance innovation with the preservation of human values and social cohesion."
-                    ],
-                    originalParagraph: "The digital revolution has fundamentally transformed how humans communicate, work, and think. What began as simple computing machines in the mid-20th century has evolved into a global network of interconnected devices. This transformation happened so rapidly that regulatory frameworks and social norms struggle to keep pace. Children born today will never know a world without instant access to vast amounts of information. Yet this unprecedented connectivity brings new challenges: privacy concerns, misinformation, and digital addiction. As we navigate this new landscape, we must balance innovation with the preservation of human values and social cohesion.",
-                    savedAt: Date.now() - 3000000
-                },
-                
-                // HARD PUZZLES
                 {
                     title: "Fracking Our Attention (Hard)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
@@ -921,42 +1057,43 @@
                     savedAt: Date.now() - 2000000
                 },
                 {
-                    title: "Quantum Computing Paradox (Hard)",
+                    title: "Organic Agriculture Paradox (Hard)",
                     instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'The Quantum Revolution' by Chen & Williams",
+                    sourceText: "from Bryan Walsh's 'Whole Food Blues: Why Organic Agriculture May Not Be So Sustainable'",
                     sentences: [
-                        "Quantum computing represents a fundamental departure from classical computation, not merely an incremental improvement.",
-                        "While classical bits exist in definite states of 0 or 1, quantum bits or 'qubits' can exist in superposition, simultaneously embodying both states until measured.",
-                        "This peculiar property, combined with entanglement—where qubits become correlated in ways that defy classical intuition—enables quantum computers to explore multiple solution paths simultaneously.",
-                        "However, the very phenomena that grant quantum computers their power also make them extraordinarily fragile.",
-                        "Maintaining quantum coherence requires isolation from environmental interference at temperatures approaching absolute zero.",
-                        "Even the slightest thermal vibration or electromagnetic disturbance can cause decoherence, collapsing the delicate quantum states.",
-                        "This creates a paradox: the more powerful we make quantum computers by adding qubits, the more difficult they become to maintain and control.",
-                        "Current research focuses on error correction schemes that use multiple physical qubits to create single logical qubits, but this approach requires exponentially more resources.",
-                        "Thus, we find ourselves in a race between scaling up quantum systems and developing new methods to preserve their quantum properties."
+                        "In an increasingly hot and crowded world, the only sustainable way to live is to get more out of less.",
+                        "Every environmentalist would agree.",
+                        "But change the conversation to food, and suddenly efficiency doesn't look so good.",
+                        "Conventional industrial agriculture has become incredibly efficient on a simple land to food basis.",
+                        "Thanks to fertilizers, mechanization and irrigation, each American farmer feeds over 155 people worldwide.",
+                        "Conventional farming gets more and more crop per square foot of cultivated land—over 170 bushels of corn per acre in Iowa, for example—which can mean less territory needs to be converted from wilderness to farmland.",
+                        "And since a third of the planet is already used for agriculture—destroying forests and other wild habitats along the way—anything that could help us produce more food on less land would seem to be good for the environment.",
+                        "Of course, that's not how most environmentalists regard their arugula."
                     ],
-                    originalParagraph: "Quantum computing represents a fundamental departure from classical computation, not merely an incremental improvement. While classical bits exist in definite states of 0 or 1, quantum bits or 'qubits' can exist in superposition, simultaneously embodying both states until measured. This peculiar property, combined with entanglement—where qubits become correlated in ways that defy classical intuition—enables quantum computers to explore multiple solution paths simultaneously. However, the very phenomena that grant quantum computers their power also make them extraordinarily fragile. Maintaining quantum coherence requires isolation from environmental interference at temperatures approaching absolute zero. Even the slightest thermal vibration or electromagnetic disturbance can cause decoherence, collapsing the delicate quantum states. This creates a paradox: the more powerful we make quantum computers by adding qubits, the more difficult they become to maintain and control. Current research focuses on error correction schemes that use multiple physical qubits to create single logical qubits, but this approach requires exponentially more resources. Thus, we find ourselves in a race between scaling up quantum systems and developing new methods to preserve their quantum properties.",
+                    originalParagraph: "In an increasingly hot and crowded world, the only sustainable way to live is to get more out of less. Every environmentalist would agree. But change the conversation to food, and suddenly efficiency doesn't look so good. Conventional industrial agriculture has become incredibly efficient on a simple land to food basis. Thanks to fertilizers, mechanization and irrigation, each American farmer feeds over 155 people worldwide. Conventional farming gets more and more crop per square foot of cultivated land—over 170 bushels of corn per acre in Iowa, for example—which can mean less territory needs to be converted from wilderness to farmland. And since a third of the planet is already used for agriculture—destroying forests and other wild habitats along the way—anything that could help us produce more food on less land would seem to be good for the environment. Of course, that's not how most environmentalists regard their arugula.",
                     savedAt: Date.now() - 1000000
                 },
                 {
-                    title: "Consciousness and Free Will (Hard)",
-                    instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
-                    sourceText: "from 'The Illusion of Choice' by Dr. Sarah Martinez",
-                    sentences: [
-                        "The question of free will has plagued philosophers for millennia, but neuroscience is now providing disturbing answers.",
-                        "Brain imaging studies reveal that decisions appear in our neural activity several seconds before we become consciously aware of choosing.",
-                        "This suggests that what we experience as deliberate choice might be merely a post-hoc narrative our consciousness constructs to explain actions already initiated by unconscious processes.",
-                        "Yet if our choices are predetermined by neural events outside our awareness, the entire foundation of moral responsibility begins to crumble.",
-                        "Some philosophers argue this is a category error—that free will operates at a different level of description than neural firing patterns.",
-                        "Others embrace the implications, suggesting we must radically reconceptualize justice, moving from punishment to rehabilitation.",
-                        "But perhaps most unsettling is the recursive nature of this knowledge: knowing that free will might be an illusion could itself alter our behavior.",
-                        "Studies show that people who believe less in free will tend to act more antisocially, creating a self-fulfilling prophecy.",
-                        "We thus face an epistemic dilemma: the truth about free will might be something we cannot afford to believe."
-                    ],
-                    originalParagraph: "The question of free will has plagued philosophers for millennia, but neuroscience is now providing disturbing answers. Brain imaging studies reveal that decisions appear in our neural activity several seconds before we become consciously aware of choosing. This suggests that what we experience as deliberate choice might be merely a post-hoc narrative our consciousness constructs to explain actions already initiated by unconscious processes. Yet if our choices are predetermined by neural events outside our awareness, the entire foundation of moral responsibility begins to crumble. Some philosophers argue this is a category error—that free will operates at a different level of description than neural firing patterns. Others embrace the implications, suggesting we must radically reconceptualize justice, moving from punishment to rehabilitation. But perhaps most unsettling is the recursive nature of this knowledge: knowing that free will might be an illusion could itself alter our behavior. Studies show that people who believe less in free will tend to act more antisocially, creating a self-fulfilling prophecy. We thus face an epistemic dilemma: the truth about free will might be something we cannot afford to believe.",
-                    savedAt: Date.now()
-                }
+                title: "Television's Influence on Children (Hard)",
+                instructions: "Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.",
+                sourceText: "from Newton N. Minow's 1961 speech 'Television and the Public Interest'",
+                sentences: [
+                    "Certainly, I hope you will agree that ratings should have little influence where children are concerned.",
+                    "The best estimates indicate that during the hours of five to six, sixty per cent of your audience is composed of children under twelve.",
+                    "And most young children today, believe it or not, spend as much time watching television as they do in the schoolroom.",
+                    "I repeat—let that sink in, ladies and gentlemen—most young children today spend as much time watching television as they do in the schoolroom.",
+                    "It used to be said that there were three great influences on a child: home, school, and church.",
+                    "Today, there is a fourth great influence, and you ladies and gentlemen in this room control it.",
+                    "If parents, teachers, and ministers conducted their responsibilities by following the ratings, children would have  a steady diet of ice cream, school holidays, and no Sunday school.",
+                    "What about your responsibilities?",
+                    "Is there no room on television to teach, to inform, to uplift, to stretch, to enlarge the capacities of our children?"
+                ],
+                originalParagraph: "Certainly, I hope you will agree that ratings should have little influence where children are concerned. The best estimates indicate that during the hours of five to six, sixty per cent of your audience is composed of children under twelve. And most young children today, believe it or not, spend as much time watching television as they do in the schoolroom. I repeat—let that sink in, ladies and gentlemen—most young children today spend as much time watching television as they do in the schoolroom. It used to be said that there were three great influences on a child: home, school, and church. Today, there is a fourth great influence, and you ladies and gentlemen in this room control it. If parents, teachers, and ministers conducted their responsibilities by following the ratings, children would have  a steady diet of ice cream, school holidays, and no Sunday school. What about your responsibilities? Is there no room on television to teach, to inform, to uplift, to stretch, to enlarge the capacities of our children?",
+                savedAt: Date.now() - 7000000
+                },
             ];
+
+            
             
             // Initialize the puzzle bank with default puzzles
             puzzleBank = defaultPuzzles;
@@ -1063,7 +1200,7 @@
             
             // Save to localStorage immediately
             try {
-                localStorage.setItem('textrisPuzzles', JSON.stringify(puzzleBank));
+                localStorage.setItem('unjumblePuzzles', JSON.stringify(puzzleBank));
                 console.log('Saved ' + puzzleBank.length + ' puzzles to localStorage');
             } catch (e) {
                 console.error('Failed to save to localStorage:', e);
@@ -1112,7 +1249,7 @@
                 
                 // Clear localStorage as well
                 try {
-                    localStorage.removeItem('textrisPuzzles');
+                    localStorage.removeItem('unjumblePuzzles');
                     console.log('Cleared all puzzles from localStorage');
                 } catch (e) {
                     console.error('Failed to clear localStorage:', e);
@@ -1165,7 +1302,7 @@
         }
         
         function generateWorksheet() {
-            const title = document.getElementById('title').value || 'Textris';
+            const title = document.getElementById('title').value || 'UnJumble';
             const instructions = document.getElementById('instructions').value || 'Please read the following sentences and place them in their correct order.';
             const sourceText = document.getElementById('sourceText').value;
             const paragraph = document.getElementById('paragraph').value.trim();
@@ -1294,12 +1431,16 @@
                 shuffledNumbers
             };
             
-            // Generate worksheet HTML
+           // Generate worksheet HTML with new layout
             let worksheetHTML = `
                 <div class="worksheet-header">
-                    <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
-                    <div class="worksheet-instructions">
-                        ${sourceText ? `Please read the following sentences from ${sourceText}. ` : ''}${instructions}
+                    <div class="logo-container">
+                        <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
+                    </div>
+                    <div class="instructions-container">
+                        <div class="worksheet-instructions">
+                            ${sourceText ? `Please read the following sentences from ${sourceText}. ` : ''}${instructions}
+                        </div>
                     </div>
                 </div>
             `;
@@ -1314,10 +1455,10 @@
                 `;
             });
             
-            // Add submission sheet for students (will be hidden for instructor version)
+            // Add submission sheet for students (will be hidden in modal preview)
             worksheetHTML += `
-                <div class="submission-sheet hide-for-instructor" id="submissionSheet">
-                    <div class="submission-title">Textris Submission Sheet</div>
+                <div class="submission-sheet hide-for-print" id="submissionSheet">
+                    <div class="submission-title">UnJumble Submission Sheet</div>
                     
                     <div class="team-info">
                         <div class="team-line"><span>Team Name:</span> _________________________________</div>
@@ -1331,7 +1472,7 @@
                             ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                            <span> You've got the first ______ sentence(s) in the right spots!
                         </div>
                     </div>
                     
@@ -1341,7 +1482,7 @@
                             ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                            <span> You've got the first ______ sentence(s) in the right spots!
                         </div>
                     </div>
                     
@@ -1351,33 +1492,31 @@
                             ${Array(finalSentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                         </div>
                         <div class="feedback-line">
-                            <span>Correct Positions:</span> _____ out of ${finalSentences.length}
+                             <span> You've got the first ______ sentence(s) in the right spots!
                         </div>
                     </div>
                 </div>
             `;
             
-            // Add answer section (only visible in instructor version)
+            // Add answer section (visible in modal preview)
             worksheetHTML += `
-                <div class="answer-section hide-for-print" id="answerSection">
+                <div class="answer-section" id="answerSection">
                     <div class="answer-label">INSTRUCTOR ANSWER KEY:</div>
                     <div class="answer-text">${shuffledNumbers.join(', ')}</div>
                 </div>
             `;
             
-            // Display worksheet
-            const worksheetDiv = document.getElementById('worksheet');
-            worksheetDiv.innerHTML = worksheetHTML;
-            worksheetDiv.classList.add('active');
-            
-            // Show preview notice
-            document.getElementById('previewNotice').classList.add('active');
+            // Display worksheet in modal
+            document.getElementById('worksheetPreviewContent').innerHTML = worksheetHTML;
+            document.getElementById('worksheetPreviewModal').classList.add('active');
             
             // Clear editing sentences
             editingSentences = [];
-            
-            // Scroll to worksheet
-            worksheetDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeWorksheetPreview() {
+            const modal = document.getElementById('worksheetPreviewModal');
+            modal.classList.remove('active');
         }
         
         function printStudentVersion() {
@@ -1386,58 +1525,199 @@
                 return;
             }
             
-            // Hide answer section for student print
-            const answerSection = document.getElementById('answerSection');
-            if (answerSection) {
-                answerSection.style.display = 'none';
-            }
+            // Create a temporary print window with student version
+            const printWindow = window.open('', '_blank');
             
-            // Show submission sheet for students
-            const submissionSheet = document.getElementById('submissionSheet');
-            if (submissionSheet) {
-                submissionSheet.style.display = 'block';
-            }
+            // Create shuffled version of sentences for student cutting
+            const shuffledSentences = shuffleArray([...currentWorksheetData.sentences]);
             
-            window.print();
+            // Generate student worksheet HTML with shuffled sentences
+            let studentHTML = `
+                <div class="worksheet-header">
+                    <div class="logo-container">
+                        <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
+                    </div>
+                    <div class="instructions-container">
+                        <div class="worksheet-instructions">
+                            ${currentWorksheetData.sourceText ? `Please read the following sentences from ${currentWorksheetData.sourceText}. ` : ''}${currentWorksheetData.instructions}
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            // Restore answer section after printing
-            if (answerSection) {
-                answerSection.style.display = 'block';
-            }
+            // Add shuffled sentences with sequential numbers for cutting
+            shuffledSentences.forEach((sentence, index) => {
+                studentHTML += `
+                    <div class="sentence-item">
+                        <div class="sentence-number">${index + 1}</div>
+                        <div class="sentence-text">${sentence}</div>
+                    </div>
+                `;
+            });
+            
+            // Add submission sheet
+            studentHTML += `
+                <div class="submission-sheet">
+                    <div class="submission-title">UnJumble Submission Sheet</div>
+                    
+                    <div class="team-info">
+                        <div class="team-line"><span>Team Name:</span> _________________________________</div>
+                        <div class="team-line"><span>Members:</span> _________________________________</div>
+                        <div class="team-line"><span></span> _________________________________</div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 1</div>
+                        <div class="attempt-grid">
+                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                             <span> You've got the first ______ sentence(s) in the right spots!
+                        </div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 2</div>
+                        <div class="attempt-grid">
+                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                             <span> You've got the first ______ sentence(s) in the right spots!
+                        </div>
+                    </div>
+                    
+                    <div class="attempt-section">
+                        <div class="attempt-header">Attempt 3</div>
+                        <div class="attempt-grid">
+                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                        </div>
+                        <div class="feedback-line">
+                             <span> You've got the first ______ sentence(s) in the right spots!
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>UnJumble Worksheet - Student Version</title>
+                    <style>${getWorksheetPrintStyles()}</style>
+                </head>
+                <body>${studentHTML}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+            printWindow.close();
         }
-        
+
         function printInstructorVersion() {
             if (!currentWorksheetData) {
                 alert('Please generate a worksheet first.');
                 return;
             }
             
-            // Hide submission sheet for instructor print
-            const submissionSheet = document.getElementById('submissionSheet');
-            if (submissionSheet) {
-                submissionSheet.style.display = 'none';
-            }
+            // Create a temporary print window with instructor version
+            const printWindow = window.open('', '_blank');
             
-            // Make answer section visible for instructor print
-            const answerSection = document.getElementById('answerSection');
-            if (answerSection) {
-                answerSection.classList.remove('hide-for-print');
-                answerSection.style.display = 'block';
-            }
+            // Generate instructor worksheet HTML with same shuffled numbers as students see
+            let instructorHTML = `
+                <div class="worksheet-header">
+                    <div class="logo-container">
+                        <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
+                    </div>
+                    <div class="instructions-container">
+                        <div class="worksheet-instructions">
+                            ${currentWorksheetData.sourceText ? `Please read the following sentences from ${currentWorksheetData.sourceText}. ` : ''}${currentWorksheetData.instructions}
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            window.print();
+            // Add sentences in original order but with the same shuffled numbers students see
+            currentWorksheetData.sentences.forEach((sentence, index) => {
+                instructorHTML += `
+                    <div class="sentence-item">
+                        <div class="sentence-number">${currentWorksheetData.shuffledNumbers[index]}</div>
+                        <div class="sentence-text">${sentence}</div>
+                    </div>
+                `;
+            });
             
-            // Restore submission sheet and hide answer section again after printing
-            if (submissionSheet) {
-                submissionSheet.style.display = 'block';
-            }
-            if (answerSection) {
-                answerSection.classList.add('hide-for-print');
-            }
+            // Add answer section showing the correct sequence
+            instructorHTML += `
+                <div class="answer-section">
+                    <div class="answer-label">INSTRUCTOR ANSWER KEY:</div>
+                    <div class="answer-text">Correct sequence: ${currentWorksheetData.shuffledNumbers.join(', ')}</div>
+                </div>
+            `;
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>UnJumble Worksheet - Instructor Copy</title>
+                    <style>${getWorksheetPrintStyles()}</style>
+                </head>
+                <body>${instructorHTML}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        function getWorksheetPrintStyles() {
+            return `
+                body { font-family: 'Times New Roman', serif; padding: 30px 40px; font-size: 12pt; }
+                .worksheet-header { 
+                    margin-bottom: 20px; 
+                    display: flex; 
+                    flex-direction: column; 
+                    align-items: flex-end; 
+                    gap: 15px; 
+                }
+                .logo-container { 
+                    width: 100%; 
+                    display: flex; 
+                    justify-content: flex-end; 
+                }
+                .worksheet-logo { height: 40px; }
+                .instructions-container { 
+                    width: 100%; 
+                    border: 1px solid #000; 
+                    padding: 15px; 
+                    background: #f9f9f9; 
+                }
+                .worksheet-instructions { 
+                    font-size: 11pt; 
+                    line-height: 1.4; 
+                    text-align: left; 
+                    color: #000; 
+                    margin: 0;
+                }
+                .sentence-item { display: flex; margin: 8px 0; border: 1px solid #000; background: white; align-items: center; }
+                .sentence-number { font-weight: bold; font-size: 1.4em; padding: 15px 20px; min-width: 60px; color: #000; text-align: center; border-right: 1px solid #000; }
+                .sentence-text { flex: 1; font-size: 1em; line-height: 1.4; color: #000; padding: 15px 20px; }
+                .submission-sheet { margin-top: 40px; padding: 30px; border: 2px solid #000; page-break-before: always; }
+                .submission-title { font-size: 1.4em; font-weight: bold; text-align: center; margin-bottom: 20px; }
+                .team-info { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #000; }
+                .team-line { margin: 10px 0; font-size: 1.1em; }
+                .team-line span { display: inline-block; width: 150px; }
+                .attempt-section { margin: 25px 0; padding: 20px; border: 1px solid #000; }
+                .attempt-header { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
+                .attempt-grid { display: flex; gap: 10px; margin-bottom: 15px; }
+                .number-box { width: 40px; height: 40px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; }
+                .feedback-line { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #666; font-size: 1em; }
+                .feedback-line span { display: inline-block; width: auto;}                
+                .answer-section { margin-top: 30px; padding: 20px; border: 2px solid #57068c; background: #f9f7fc; }
+                .answer-label { font-weight: bold; font-size: 1.2em; display: block; color: #57068c; margin-bottom: 10px; }
+                .answer-text { font-size: 1.1em; color: #000; display: block; }
+            `;
         }
         
         function resetForm() {
-            document.getElementById('title').value = 'Textris';
+            document.getElementById('title').value = 'UnJumble';
             document.getElementById('instructions').value = 'Please read the following sentences and place them in their correct order. Each team only gets three guesses. Teams who finish in 10 minutes get 1 flex point.';
             document.getElementById('sourceText').value = '';
             document.getElementById('paragraph').value = '';
