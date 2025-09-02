@@ -1575,97 +1575,104 @@
         }
         
         function printStudentVersion() {
-            if (!currentWorksheetData) {
-                alert('Please generate a worksheet first.');
-                return;
-            }
-            
-            // Create a temporary print window with student version
-            const printWindow = window.open('', '_blank');
-            
-            // Create shuffled version of sentences for student cutting
-            const shuffledSentences = shuffleArray([...currentWorksheetData.sentences]);
-            
-            // Generate student worksheet HTML with shuffled sentences
-            let studentHTML = `
-                <div class="worksheet-header">
-                    <div class="logo-container">
-                        <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
-                    </div>
-                    <div class="instructions-container">
-                        <div class="worksheet-instructions">
-                            ${currentWorksheetData.sourceText ? `Please read the following sentences from ${currentWorksheetData.sourceText}. ` : ''}${currentWorksheetData.instructions}
-                        </div>
-                    </div>
+    if (!currentWorksheetData) {
+        alert('Please generate a worksheet first.');
+        return;
+    }
+    
+    // Create a temporary print window with student version
+    const printWindow = window.open('', '_blank');
+    
+    // Create array of sentence objects with their assigned numbers
+    const sentencesWithNumbers = currentWorksheetData.sentences.map((sentence, index) => ({
+        sentence: sentence,
+        number: currentWorksheetData.shuffledNumbers[index]
+    }));
+    
+    // Sort by the assigned numbers to show them in numerical order (1, 2, 3, etc.)
+    // This way students get the cut-out slips in order by number, not by correct sequence
+    sentencesWithNumbers.sort((a, b) => a.number - b.number);
+    
+    // Generate student worksheet HTML with sentences ordered by their assigned numbers
+    let studentHTML = `
+        <div class="worksheet-header">
+            <div class="logo-container">
+                <img src="https://i.imgur.com/iIODsNl.png" alt="NYU Logo" class="worksheet-logo">
+            </div>
+            <div class="instructions-container">
+                <div class="worksheet-instructions">
+                    ${currentWorksheetData.sourceText ? `Please read the following sentences from ${currentWorksheetData.sourceText}. ` : ''}${currentWorksheetData.instructions}
                 </div>
-            `;
+            </div>
+        </div>
+    `;
+    
+    // Add sentences ordered by their numbers (so slip #1 comes first, then #2, etc.)
+    sentencesWithNumbers.forEach((item) => {
+        studentHTML += `
+            <div class="sentence-item-cut">
+                <div class="sentence-number-cut">${item.number}</div>
+                <div class="sentence-text-cut">${item.sentence}</div>
+            </div>
+        `;
+    });
+    
+    // Add submission sheet
+    studentHTML += `
+        <div class="submission-sheet">
+            <div class="submission-title">UnJumble Submission Sheet</div>
             
-            // Add shuffled sentences with cut-line borders
-            shuffledSentences.forEach((sentence, index) => {
-                studentHTML += `
-                    <div class="sentence-item-cut">
-                        <div class="sentence-number-cut">${index + 1}</div>
-                        <div class="sentence-text-cut">${sentence}</div>
-                    </div>
-                `;
-            });
+            <div class="team-info">
+                <div class="team-line"><span>Team Name:</span> _________________________________</div>
+                <div class="team-line"><span>Members:</span> _________________________________</div>
+                <div class="team-line"><span></span> _________________________________</div>
+            </div>
             
-            // Add submission sheet
-            studentHTML += `
-                <div class="submission-sheet">
-                    <div class="submission-title">UnJumble Submission Sheet</div>
-                    
-                    <div class="team-info">
-                        <div class="team-line"><span>Team Name:</span> _________________________________</div>
-                        <div class="team-line"><span>Members:</span> _________________________________</div>
-                        <div class="team-line"><span></span> _________________________________</div>
-                    </div>
-                    
-                    <div class="attempt-section">
-                        <div class="attempt-header">Attempt 1</div>
-                        <div class="attempt-grid">
-                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
-                        </div>
-                        <div class="feedback-line">
-                            <span>You've got the first ______ sentence(s) in the right spots!</span>
-                        </div>
-                    </div>
-                    
-                    <div class="attempt-section">
-                        <div class="attempt-header">Attempt 2</div>
-                        <div class="attempt-grid">
-                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
-                        </div>
-                        <div class="feedback-line">
-                            <span>You've got the first ______ sentence(s) in the right spots!</span>
-                        </div>
-                    </div>
-                    
-                    <div class="attempt-section">
-                        <div class="attempt-header">Attempt 3</div>
-                        <div class="attempt-grid">
-                            ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
-                        </div>
-                        <div class="feedback-line">
-                            <span>You've got the first ______ sentence(s) in the right spots!</span>
-                        </div>
-                    </div>
+            <div class="attempt-section">
+                <div class="attempt-header">Attempt 1</div>
+                <div class="attempt-grid">
+                    ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
                 </div>
-            `;
+                <div class="feedback-line">
+                    <span>You've got the first ______ sentence(s) in the right spots!</span>
+                </div>
+            </div>
             
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>UnJumble Worksheet - Student Version</title>
-                    <style>${getWorksheetPrintStyles()}</style>
-                </head>
-                <body>${studentHTML}</body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-            printWindow.close();
-        }
+            <div class="attempt-section">
+                <div class="attempt-header">Attempt 2</div>
+                <div class="attempt-grid">
+                    ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                </div>
+                <div class="feedback-line">
+                    <span>You've got the first ______ sentence(s) in the right spots!</span>
+                </div>
+            </div>
+            
+            <div class="attempt-section">
+                <div class="attempt-header">Attempt 3</div>
+                <div class="attempt-grid">
+                    ${Array(currentWorksheetData.sentences.length).fill('').map(() => '<div class="number-box"></div>').join('')}
+                </div>
+                <div class="feedback-line">
+                    <span>You've got the first ______ sentence(s) in the right spots!</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>UnJumble Worksheet - Student Version</title>
+            <style>${getWorksheetPrintStyles()}</style>
+        </head>
+        <body>${studentHTML}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+}
 
         function printInstructorVersion() {
             if (!currentWorksheetData) {
